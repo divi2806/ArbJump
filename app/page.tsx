@@ -6,7 +6,7 @@ const frame = {
   version: 'next',
   imageUrl: `${APP_URL}/images/icon.png`,
   button: {
-    title: 'Launch Template',
+    title: 'EARN $ARB NOW',
     action: {
       type: 'launch_frame',
       name: 'arbjump',
