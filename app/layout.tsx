@@ -5,7 +5,13 @@ import { Providers } from '@/components/providers'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
-const jersey25 = Jersey_25({ subsets: ['latin'], weight: '400' })
+const jersey25 = Jersey_25({
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  fallback: ['cursive'],
+  adjustFontFallback: false
+})
 const teko = Teko({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
