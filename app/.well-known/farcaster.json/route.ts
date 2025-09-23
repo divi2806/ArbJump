@@ -12,7 +12,7 @@ export async function GET() {
     "splashImageUrl": "https://arb-jump.vercel.app/splash.png",
     "splashBackgroundColor": "#ffffff",
     "webhookUrl": "https://arb-jump.vercel.app/api/webhook",
-    "subtitle": "Collect Coins and powerups and jump only in arbitrum",
+    "subtitle": "jump to earn on arbitrum",
     "description": "Collect Coins and powerups and jump only in arbitrum. A fun jump to earn game on aribitrum",
     "primaryCategory": "games",
     "tags": [
