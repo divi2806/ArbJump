@@ -1,0 +1,17 @@
+{
+  "name": "Space Jump",
+  "short_name": "SpaceJump",
+  "description": "A Doodle Jump-style space jumping game",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "assets/astronaut.png",
+      "sizes": "952x238",
+      "type": "image/png"
+    }
+  ]
+}
