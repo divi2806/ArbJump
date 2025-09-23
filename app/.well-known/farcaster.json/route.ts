@@ -15,6 +15,7 @@ export async function GET() {
     "subtitle": "jump to earn on arbitrum",
     "description": "Collect Coins and powerups and jump only in arbitrum. A fun jump to earn game on aribitrum",
     "primaryCategory": "games",
+    'buttonTitle': "Earn $ARB Now",
     "tags": [
       "arbitrum",
       "recess",
