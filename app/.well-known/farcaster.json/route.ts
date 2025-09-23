@@ -3,28 +3,33 @@ import { APP_URL } from "../../../lib/constants";
 
 export async function GET() {
   const farcasterConfig = {
-    "frame": {
-      "name": "arbjump",
-      "version": "1",
-      "iconUrl": "https://jumpfinal.vercel.app/images/icon.png",
-      "homeUrl": "https://jumpfinal.vercel.app",
-      "imageUrl": "https://jumpfinal.vercel.app/images/image.png",
-      "splashImageUrl": "https://jumpfinal.vercel.app/images/splash.png",
-      "splashBackgroundColor": "#ffffff",
-      "webhookUrl": "https://jumpfinal.vercel.app/api/webhook",
-      "subtitle": "Jump to collect coins on Arbitrum",
-      "description": "ArbJump is the next billion game on Arbitrum",
-      "primaryCategory": "games"
-    },
-    "accountAssociation": {
-    "header": "eyJmaWQiOjExMDg1NzQsInR5cGUiOiJhdXRoIiwia2V5IjoiMHhkODUzOTVERWYzZDYzM0U3ODYyOTFiZjlERTU0ZDMyNGVlYkM3OTE3In0",
-    "payload": "eyJkb21haW4iOiJqdW1wZmluYWwudmVyY2VsLmFwcCJ9",
-    "signature": "1bA7P3VPHAsGMdMnoxf8SLWHhVoohnfN/c1EoYvT7xo8ttSZ099HrC31BaDDsQPQaxp4ASRabDcBi16A9SWOZxs="
+  "frame": {
+    "name": "ArbJump",
+    "version": "1",
+    "iconUrl": "https://arb-jump-67zv.vercel.app/icon.png",
+    "homeUrl": "https://arb-jump-67zv.vercel.app",
+    "imageUrl": "https://arb-jump-67zv.vercel.app/image.png",
+    "splashImageUrl": "https://arb-jump-67zv.vercel.app/splash.png",
+    "splashBackgroundColor": "#ffffff",
+    "webhookUrl": "https://arb-jump-67zv.vercel.app/api/webhook",
+    "subtitle": "Collect Coins and powerups and jump only in arbitrum",
+    "description": "Collect Coins and powerups and jump only in arbitrum. A fun jump to earn game on aribitrum ",
+    "primaryCategory": "games",
+    "tags": [
+      "arbitrum",
+      "chainjump",
+      "games",
+      "farcaster",
+      "chaincrush"
+    ],
+    "tagline": "Gotta earn it all"
   },
-   "baseBuilder": {
-    "allowedAddresses": ["0x721f07F9E4b5b2D522D0D657cCEebfb64487d8DC"]
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExNDI1MzksInR5cGUiOiJhdXRoIiwia2V5IjoiMHgyODUyMTE3NzI2ODcyNTY0YThiZDk3M2E5OTIzOGEzOTdiMjgzMUJmIn0",
+    "payload": "eyJkb21haW4iOiJodHRwczovL2FyYi1qdW1wLTY3enYudmVyY2VsLmFwcCJ9",
+    "signature": "ZVsoaBaw9ZAvAb89s8eGY9+lv3r4F3IZhlOEBJ8fAPNjH94UpWjrPKYN+6mlQao8v+pvHPrbthgYkDz0x25alxw="
   }
-  };
+};
 
   return NextResponse.json(farcasterConfig);
 }
