@@ -8,6 +8,7 @@ import Leaderboard from './Leaderboard'
 import CustomModal from './CustomModal'
 import LoadingSpinner from './LoadingSpinner'
 import styles from './SpaceJumpGame.module.css'
+import { APP_URL } from '../lib/constants'
 
 export default function SpaceJumpGame() {
   const gameInitialized = useRef(false)
@@ -17,6 +18,8 @@ export default function SpaceJumpGame() {
   const [isSubmittingScore, setIsSubmittingScore] = useState(false)
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [gameScriptLoaded, setGameScriptLoaded] = useState(false)
+  const [assetsLoaded, setAssetsLoaded] = useState(false)
+  const [loadingProgress, setLoadingProgress] = useState(0)
   const currentScoreRef = useRef(0)
   
   // Modal states
@@ -84,7 +87,7 @@ export default function SpaceJumpGame() {
     if (submissionStatus === 'error') {
       setSubmissionStatus('idle')
     }
-    
+
     // Enhanced wallet connection checks
     if (!isConnected) {
       setModal({
@@ -121,7 +124,7 @@ export default function SpaceJumpGame() {
     const userUsername = context?.user?.username || 'Anonymous'
     const userFid = context?.user?.fid || 0
     const userPfp = context?.user?.pfpUrl || ''
-    
+
     // Log context for debugging
     if (process.env.NODE_ENV === 'development') {
       console.log('Farcaster context:', context)
@@ -150,6 +153,43 @@ export default function SpaceJumpGame() {
         // Do nothing, just close modal
       }
     })
+  }
+
+  const handleShareScore = async () => {
+    const finalScore = parseInt(document.getElementById('finalScore')?.textContent || '0')
+
+    if (finalScore <= 0) {
+      setModal({
+        isVisible: true,
+        title: 'No Score to Share',
+        message: 'Play the game first to get a score worth sharing!',
+        type: 'info'
+      })
+      return
+    }
+
+    try {
+      if (actions?.composeCast) {
+        await actions.composeCast({
+          text: `I scored ${finalScore} in ArbJump! 🚀 Beat my score and earn real $ARB tokens! 💰\n\nPlay now: ${APP_URL}`
+        })
+      } else {
+        setModal({
+          isVisible: true,
+          title: 'Share Not Available',
+          message: 'Sharing is only available in Farcaster clients that support it.',
+          type: 'info'
+        })
+      }
+    } catch (error) {
+      console.error('Error sharing score:', error)
+      setModal({
+        isVisible: true,
+        title: 'Share Failed',
+        message: 'Could not share your score. Please try again later.',
+        type: 'error'
+      })
+    }
   }
 
   const closeModal = () => {
@@ -390,13 +430,57 @@ export default function SpaceJumpGame() {
     }, 200) // Increased delay to ensure DOM is fully ready
   }
 
+  // Asset preloader function
+  const preloadAssets = () => {
+    return new Promise<void>((resolve) => {
+      const assets = [
+        '/astronaut.png',
+        '/bg.png',
+        '/bg2.png',
+        '/coin.png',
+        '/coins.mp3',
+        '/coins2.mp3'
+      ]
+
+      let loadedCount = 0
+      const totalAssets = assets.length
+
+      const updateProgress = () => {
+        loadedCount++
+        const progress = Math.round((loadedCount / totalAssets) * 100)
+        setLoadingProgress(progress)
+
+        if (loadedCount === totalAssets) {
+          setAssetsLoaded(true)
+          resolve()
+        }
+      }
+
+      assets.forEach(src => {
+        if (src.endsWith('.mp3')) {
+          const audio = new Audio(src)
+          audio.addEventListener('canplaythrough', updateProgress, { once: true })
+          audio.addEventListener('error', updateProgress, { once: true })
+          audio.load()
+        } else {
+          const img = new Image()
+          img.onload = updateProgress
+          img.onerror = updateProgress
+          img.src = src
+        }
+      })
+    })
+  }
+
   useEffect(() => {
     if (gameInitialized.current) return
     gameInitialized.current = true
 
-    // Load the game engine script
-    const script = document.createElement('script')
-    script.src = '/game-engine.js'
+    // First preload assets, then load game
+    preloadAssets().then(() => {
+      // Load the game engine script
+      const script = document.createElement('script')
+      script.src = '/game-engine.js'
     script.onload = () => {
       // Check if the game class is available
       if (!(window as any).SpaceJumpGameClass) {
@@ -439,6 +523,10 @@ export default function SpaceJumpGame() {
         // to ensure all DOM elements are ready
         setTimeout(() => {
           setupGameEventListeners(gameInstance)
+
+          // Add share score functionality to game
+          ;(window as any).shareScore = handleShareScore
+
           console.log('✅ Game initialization complete')
         }, 100)
                } catch (error) {
@@ -450,17 +538,21 @@ export default function SpaceJumpGame() {
          }
     }
     script.onerror = () => {
-      console.error('Failed to load game engine script')
-    }
-    document.head.appendChild(script)
-
-    return () => {
-      // Cleanup
-      const existingScript = document.querySelector('script[src="/game-engine.js"]')
-      if (existingScript) {
-        existingScript.remove()
+        console.error('Failed to load game engine script')
       }
-    }
+      document.head.appendChild(script)
+
+      return () => {
+        // Cleanup
+        const existingScript = document.querySelector('script[src="/game-engine.js"]')
+        if (existingScript) {
+          existingScript.remove()
+        }
+      }
+    }).catch((error) => {
+      console.error('Asset preloading failed:', error)
+      setAssetsLoaded(true) // Continue anyway
+    })
   }, [])
 
   // Set up button event listeners immediately after mount
@@ -495,6 +587,27 @@ export default function SpaceJumpGame() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // Show loading screen while assets are loading
+  if (!assetsLoaded) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <div className={styles.loadingIcon}>
+            <div className={styles.astronaut}></div>
+          </div>
+          <h2 className={styles.loadingTitle}>Loading ArbJump</h2>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
+          </div>
+          <p className={styles.loadingText}>{loadingProgress}% - Loading game assets...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div id="gameContainer" className={styles.gameContainer}>
@@ -569,8 +682,20 @@ export default function SpaceJumpGame() {
                 </span>
               </div>
             </button>
-            <button 
-              id="topScorerBtn" 
+            <button
+              id="shareScoreBtn"
+              className={`${styles.actionBtn} ${styles.shareBtn}`}
+              onClick={(e) => {
+                console.log('Share score button clicked via React onClick')
+                e.preventDefault()
+                e.stopPropagation()
+                handleShareScore()
+              }}
+            >
+              📤 Share
+            </button>
+            <button
+              id="topScorerBtn"
               className={styles.actionBtn}
               onClick={(e) => {
                 console.log('Top scorer button clicked via React onClick')
