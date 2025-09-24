@@ -8,7 +8,6 @@ import Leaderboard from './Leaderboard'
 import CustomModal from './CustomModal'
 import LoadingSpinner from './LoadingSpinner'
 import styles from './SpaceJumpGame.module.css'
-import { APP_URL } from '../lib/constants'
 
 export default function SpaceJumpGame() {
   const gameInitialized = useRef(false)
@@ -20,6 +19,7 @@ export default function SpaceJumpGame() {
   const [gameScriptLoaded, setGameScriptLoaded] = useState(false)
   const [assetsLoaded, setAssetsLoaded] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
+  const [gameStarting, setGameStarting] = useState(false)
   const currentScoreRef = useRef(0)
   
   // Modal states
@@ -171,7 +171,7 @@ export default function SpaceJumpGame() {
     try {
       if (actions?.composeCast) {
         await actions.composeCast({
-          text: `I scored ${finalScore} in ArbJump! 🚀 Beat my score and earn real $ARB tokens! 💰\n\nPlay now: ${APP_URL}`
+          text: `I scored ${finalScore} in ArbJump! 🚀 Beat my score and earn real $ARB tokens! 💰\n\nPlay now: https://farcaster.xyz/miniapps/fAd-0wlazOlZ/arbjump`
         })
       } else {
         setModal({
@@ -328,16 +328,10 @@ export default function SpaceJumpGame() {
         }
       }
 
-      // Start screen buttons
+      // Start screen buttons - Skip startPlayBtn as it now uses React onClick
       const startPlayBtn = document.getElementById('startPlayBtn')
       console.log('Start play button found:', !!startPlayBtn, 'Game start method:', !!gameInstance?.startGame)
-      if (startPlayBtn && gameInstance && typeof gameInstance.startGame === 'function') {
-        startPlayBtn.onclick = (e) => {
-          console.log('Start play button clicked')
-          e.preventDefault()
-          gameInstance.startGame()
-        }
-      }
+      // Note: startPlayBtn now uses React onClick handler with loading state
 
       const startLeaderboardBtn = document.getElementById('startLeaderboardBtn')
       console.log('Start leaderboard button found:', !!startLeaderboardBtn)
@@ -771,15 +765,45 @@ export default function SpaceJumpGame() {
             <button
               id="startPlayBtn"
               className={styles.startBtn}
+              disabled={gameStarting}
+              onClick={(e) => {
+                console.log('Play Now button clicked via React onClick')
+                e.preventDefault()
+                e.stopPropagation()
+                setGameStarting(true)
+
+                // Start the game after a short delay to show the loader
+                setTimeout(() => {
+                  if (gameInstanceRef.current && typeof gameInstanceRef.current.startGame === 'function') {
+                    gameInstanceRef.current.startGame()
+                  }
+                  setGameStarting(false)
+                }, 1500) // 1.5 second delay to show loading
+              }}
             >
               <div className={styles.buttonContent}>
-                <span className={styles.buttonIcon}>🎮</span>
-                <span className={styles.buttonText}>PLAY NOW</span>
+                {gameStarting ? (
+                  <>
+                    <LoadingSpinner size="small" color="#fff" />
+                    <span className={styles.buttonText}>STARTING...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className={styles.buttonIcon}>🎮</span>
+                    <span className={styles.buttonText}>PLAY NOW</span>
+                  </>
+                )}
               </div>
             </button>
             <button
               id="startLeaderboardBtn"
               className={styles.startBtn}
+              onClick={(e) => {
+                console.log('Leaderboard button clicked via React onClick')
+                e.preventDefault()
+                e.stopPropagation()
+                setShowLeaderboard(true)
+              }}
             >
               <div className={styles.buttonContent}>
                 <span className={styles.buttonIcon}>🏆</span>
@@ -789,6 +813,12 @@ export default function SpaceJumpGame() {
             <button
               id="howToPlayBtn"
               className={styles.startBtn}
+              onClick={(e) => {
+                console.log('How to play button clicked via React onClick')
+                e.preventDefault()
+                e.stopPropagation()
+                setShowHowToPlay(true)
+              }}
             >
               <div className={styles.buttonContent}>
                 <span className={styles.buttonIcon}>❓</span>
