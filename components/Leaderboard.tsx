@@ -32,14 +32,35 @@ export default function Leaderboard({
   const { address } = useAccount()
   const chainId = useChainId()
 
-  // Calculate one week from now
+  // Unix-based persistent weekly contest timer
   useEffect(() => {
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + 7)
+    const getWeeklyContestEndTime = () => {
+      // Contest starts on Monday 00:00 UTC and ends on Sunday 23:59:59 UTC
+      // This creates consistent weekly periods regardless of when user opens the page
+
+      const now = new Date()
+      const currentWeekStart = new Date(now)
+
+      // Get the Monday of current week (0 = Sunday, 1 = Monday, etc.)
+      const dayOfWeek = now.getUTCDay()
+      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1  // If Sunday, 6 days from last Monday
+
+      // Set to last Monday 00:00:00 UTC
+      currentWeekStart.setUTCDate(now.getUTCDate() - daysFromMonday)
+      currentWeekStart.setUTCHours(0, 0, 0, 0)
+
+      // Contest ends on Sunday 23:59:59 UTC (6 days after Monday)
+      const contestEnd = new Date(currentWeekStart)
+      contestEnd.setUTCDate(currentWeekStart.getUTCDate() + 6)
+      contestEnd.setUTCHours(23, 59, 59, 999)
+
+      return contestEnd
+    }
 
     const updateTimer = () => {
+      const contestEndTime = getWeeklyContestEndTime()
       const now = new Date().getTime()
-      const distance = targetDate.getTime() - now
+      const distance = contestEndTime.getTime() - now
 
       if (distance > 0) {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24))
@@ -49,7 +70,21 @@ export default function Leaderboard({
 
         setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`)
       } else {
-        setTimeLeft('Contest Ended')
+        // Contest has ended, calculate next week's end
+        const nextWeekEnd = new Date(contestEndTime)
+        nextWeekEnd.setUTCDate(nextWeekEnd.getUTCDate() + 7)
+
+        const nextDistance = nextWeekEnd.getTime() - now
+        if (nextDistance > 0) {
+          const days = Math.floor(nextDistance / (1000 * 60 * 60 * 24))
+          const hours = Math.floor((nextDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const minutes = Math.floor((nextDistance % (1000 * 60 * 60)) / (1000 * 60))
+          const seconds = Math.floor((nextDistance % (1000 * 60)) / 1000)
+
+          setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`)
+        } else {
+          setTimeLeft('Calculating...')
+        }
       }
     }
 
@@ -67,11 +102,10 @@ export default function Leaderboard({
     refetch: refetchScores 
   } = useChainjumpLeaderboard(limit)
   
-  const { 
-    myScore: myChainjumpScore, 
-    myRank: myChainjumpRank, 
-    hasScore, 
-    isLoading: myDataLoading,
+  const {
+    myScore: myChainjumpScore,
+    myRank: myChainjumpRank,
+    hasScore,
     username,
     fid,
     pfp

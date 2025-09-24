@@ -521,6 +521,7 @@ export default function SpaceJumpGame() {
           // Add share score functionality to game
           ;(window as any).shareScore = handleShareScore
 
+
           console.log('✅ Game initialization complete')
         }, 100)
                } catch (error) {
