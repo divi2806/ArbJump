@@ -10,7 +10,7 @@ export function Demo() {
       <div className="fixed top-2 right-2 z-50">
         <WalletConnection size="small" />
       </div>
-      
+
       {/* Game content - full screen */}
       <div className="w-full h-full">
         <SpaceJumpGame />

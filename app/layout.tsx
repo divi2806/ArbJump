@@ -9,7 +9,8 @@ const jersey25 = Jersey_25({
   subsets: ['latin'],
   weight: '400',
   display: 'swap',
-  fallback: ['monospace']
+  fallback: ['monospace'],
+  adjustFontFallback: false
 })
 const teko = Teko({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] })
 

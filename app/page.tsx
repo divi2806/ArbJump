@@ -6,7 +6,7 @@ const frame = {
   version: 'next',
   imageUrl: `${APP_URL}/images/icon.png`,
   button: {
-    title: 'Launch Template',
+    title: 'EARN $ARB NOW',
     action: {
       type: 'launch_frame',
       name: 'chainjump',
@@ -15,6 +15,13 @@ const frame = {
       splashBackgroundColor: '#f7f7f7',
     },
   },
+  supports_mini_app: true,
+  mini_app: {
+    name: 'ArbJump',
+    icon: `${APP_URL}/images/icon.png`,
+    description: 'ArbJump is the next billion game',
+    url: APP_URL,
+  }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
