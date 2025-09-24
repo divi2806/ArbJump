@@ -18,6 +18,7 @@ export default function SpaceJumpGame() {
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [gameScriptLoaded, setGameScriptLoaded] = useState(false)
   const [assetsLoaded, setAssetsLoaded] = useState(false)
+  const [gameEngineReady, setGameEngineReady] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [gameStarting, setGameStarting] = useState(false)
   const currentScoreRef = useRef(0)
@@ -428,12 +429,22 @@ export default function SpaceJumpGame() {
   const preloadAssets = () => {
     return new Promise<void>((resolve) => {
       const assets = [
-        '/astronaut.png',
         '/bg.png',
-        '/bg2.png',
+        '/astronaut.png',
+        '/tilePurple.png',
+        '/tileRed.png',
+        '/tileYellow.png',
         '/coin.png',
-        '/coins.mp3',
-        '/coins2.mp3'
+        '/shoes.png',
+        '/Wallpaper.png',
+        '/play.png',
+        '/exit.png',
+        '/topscorer.png',
+        '/bg2.png',
+        '/space2.png',
+        '/space3.png',
+        '/jump.wav',
+        '/coins.mp3'
       ]
 
       let loadedCount = 0
@@ -451,15 +462,21 @@ export default function SpaceJumpGame() {
       }
 
       assets.forEach(src => {
-        if (src.endsWith('.mp3')) {
+        if (src.endsWith('.mp3') || src.endsWith('.wav')) {
           const audio = new Audio(src)
           audio.addEventListener('canplaythrough', updateProgress, { once: true })
-          audio.addEventListener('error', updateProgress, { once: true })
+          audio.addEventListener('error', () => {
+            console.warn(`Failed to load audio asset: ${src}`)
+            updateProgress()
+          }, { once: true })
           audio.load()
         } else {
           const img = new Image()
           img.onload = updateProgress
-          img.onerror = updateProgress
+          img.onerror = () => {
+            console.warn(`Failed to load image asset: ${src}`)
+            updateProgress()
+          }
           img.src = src
         }
       })
@@ -504,6 +521,25 @@ export default function SpaceJumpGame() {
         gameInstanceRef.current = gameInstance
         ;(window as any).gameInstance = gameInstance
 
+        // Wait for game engine assets to fully load before marking as ready
+        const checkGameReady = () => {
+          if (gameInstance.assetsLoaded >= gameInstance.totalAssets && gameInstance.totalAssets > 0) {
+            console.log('✅ Game engine fully initialized with all assets')
+            setGameEngineReady(true)
+
+            // Set up event listeners after game is fully ready
+            setupGameEventListeners(gameInstance)
+
+            // Add share score functionality to game
+            ;(window as any).shareScore = handleShareScore
+
+            console.log('✅ Game initialization complete')
+          } else {
+            console.log(`⏳ Waiting for game assets: ${gameInstance.assetsLoaded}/${gameInstance.totalAssets}`)
+            setTimeout(checkGameReady, 100)
+          }
+        }
+
         // Also store on the button element as additional fallback
         setTimeout(() => {
           const startPlayBtn = document.getElementById('startPlayBtn')
@@ -511,19 +547,8 @@ export default function SpaceJumpGame() {
             ;(startPlayBtn as any).gameInstance = gameInstance
             console.log('✅ Game instance stored on button element')
           }
+          checkGameReady()
         }, 50)
-
-        // Set up event listeners for our buttons after a short delay
-        // to ensure all DOM elements are ready
-        setTimeout(() => {
-          setupGameEventListeners(gameInstance)
-
-          // Add share score functionality to game
-          ;(window as any).shareScore = handleShareScore
-
-
-          console.log('✅ Game initialization complete')
-        }, 100)
                } catch (error) {
            console.error('Error initializing game:', error)
            console.error('Error details:', {
@@ -583,8 +608,8 @@ export default function SpaceJumpGame() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Show loading screen while assets are loading
-  if (!assetsLoaded) {
+  // Show loading screen while assets are loading or game engine is not ready
+  if (!assetsLoaded || !gameEngineReady) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingContent}>
@@ -598,7 +623,12 @@ export default function SpaceJumpGame() {
               style={{ width: `${loadingProgress}%` }}
             ></div>
           </div>
-          <p className={styles.loadingText}>{loadingProgress}% - Loading game assets...</p>
+          <p className={styles.loadingText}>
+            {!assetsLoaded
+              ? `${loadingProgress}% - Loading game assets...`
+              : 'Initializing game engine...'
+            }
+          </p>
         </div>
       </div>
     )
@@ -766,20 +796,27 @@ export default function SpaceJumpGame() {
             <button
               id="startPlayBtn"
               className={styles.startBtn}
-              disabled={gameStarting}
+              disabled={gameStarting || !gameEngineReady}
               onClick={(e) => {
                 console.log('Play Now button clicked via React onClick')
                 e.preventDefault()
                 e.stopPropagation()
+
+                // Only start if game engine is fully ready
+                if (!gameEngineReady) {
+                  console.warn('Game engine not ready yet!')
+                  return
+                }
+
                 setGameStarting(true)
 
-                // Start the game after a short delay to show the loader
-                setTimeout(() => {
-                  if (gameInstanceRef.current && typeof gameInstanceRef.current.startGame === 'function') {
-                    gameInstanceRef.current.startGame()
-                  }
-                  setGameStarting(false)
-                }, 1500) // 1.5 second delay to show loading
+                // Start the game immediately since assets are already loaded
+                if (gameInstanceRef.current && typeof gameInstanceRef.current.startGame === 'function') {
+                  gameInstanceRef.current.startGame()
+                } else {
+                  console.error('Game instance or startGame method not available')
+                }
+                setGameStarting(false)
               }}
             >
               <div className={styles.buttonContent}>
@@ -791,7 +828,9 @@ export default function SpaceJumpGame() {
                 ) : (
                   <>
                     <span className={styles.buttonIcon}>🎮</span>
-                    <span className={styles.buttonText}>PLAY NOW</span>
+                    <span className={styles.buttonText}>
+                      {gameEngineReady ? 'PLAY NOW' : 'LOADING...'}
+                    </span>
                   </>
                 )}
               </div>
