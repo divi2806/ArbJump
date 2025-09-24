@@ -202,7 +202,7 @@ export default {
 
   // New Chainjump contract with profile support
   Chainjump: {
-    contractAddress: "0xab2c353e41d3944844b941870ccf8e36cbd4788f",
+    contractAddress: "0xad550e091e8eBa780a4D9e7ca93637685eb62938",
     abi: [
       {
         "anonymous": false,

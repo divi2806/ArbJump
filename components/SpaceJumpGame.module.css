@@ -7,12 +7,6 @@
     align-items: center;
     overflow: hidden;
     max-height: 100vh;
-    background: linear-gradient(135deg,
-        #1a1a2e 0%,
-        #2d1b69 25%,
-        #483d8b 50%,
-        #6a5acd 75%,
-        #8a2be2 100%);
 }
 
 .gameCanvas {
@@ -285,11 +279,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(ellipse at center,
-        #0f0f23 0%,
-        #1a1a2e 30%,
-        #0d1b2a 60%,
-        #000814 100%);
+    background-color: #1a1a2e;
+    background-image: url('/work.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -297,139 +291,11 @@
     color: white;
     pointer-events: auto;
     overflow: hidden;
-    position: relative;
-}
-
-.startScreen::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        /* Large bright stars */
-        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
-        radial-gradient(circle at 85% 15%, rgba(173, 216, 230, 0.8) 0%, rgba(173, 216, 230, 0.2) 1px, transparent 2px),
-        radial-gradient(circle at 75% 80%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
-        radial-gradient(circle at 60% 10%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 1px, transparent 2px),
-
-        /* Medium stars */
-        radial-gradient(circle at 25% 70%, rgba(255, 255, 255, 0.7) 0%, transparent 1px),
-        radial-gradient(circle at 45% 30%, rgba(173, 216, 230, 0.6) 0%, transparent 1px),
-        radial-gradient(circle at 90% 60%, rgba(255, 255, 255, 0.7) 0%, transparent 1px),
-        radial-gradient(circle at 15% 90%, rgba(255, 255, 255, 0.6) 0%, transparent 1px),
-        radial-gradient(circle at 35% 5%, rgba(173, 216, 230, 0.5) 0%, transparent 1px),
-        radial-gradient(circle at 65% 45%, rgba(255, 255, 255, 0.6) 0%, transparent 1px),
-
-        /* Small distant stars */
-        radial-gradient(circle at 5% 40%, rgba(255, 255, 255, 0.4) 0%, transparent 0.5px),
-        radial-gradient(circle at 95% 25%, rgba(255, 255, 255, 0.3) 0%, transparent 0.5px),
-        radial-gradient(circle at 30% 85%, rgba(173, 216, 230, 0.4) 0%, transparent 0.5px),
-        radial-gradient(circle at 70% 5%, rgba(255, 255, 255, 0.3) 0%, transparent 0.5px),
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 0.5px),
-        radial-gradient(circle at 80% 35%, rgba(173, 216, 230, 0.3) 0%, transparent 0.5px),
-        radial-gradient(circle at 40% 95%, rgba(255, 255, 255, 0.3) 0%, transparent 0.5px),
-        radial-gradient(circle at 55% 65%, rgba(255, 255, 255, 0.3) 0%, transparent 0.5px),
-
-        /* Extra tiny stars for density */
-        radial-gradient(circle at 12% 15%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 88% 45%, rgba(173, 216, 230, 0.25) 0%, transparent 0.3px),
-        radial-gradient(circle at 22% 75%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 78% 25%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 35% 55%, rgba(173, 216, 230, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 65% 85%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 15% 65%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 85% 15%, rgba(173, 216, 230, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 45% 35%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px),
-        radial-gradient(circle at 75% 65%, rgba(255, 255, 255, 0.2) 0%, transparent 0.3px);
-    animation: starTwinkle 3s ease-in-out infinite;
-    pointer-events: none;
-}
-
-.startScreen::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        /* Distant galaxies */
-        radial-gradient(ellipse 200px 100px at 20% 30%, rgba(100, 149, 237, 0.15) 0%, rgba(72, 61, 139, 0.08) 40%, transparent 70%),
-        radial-gradient(ellipse 150px 80px at 80% 70%, rgba(147, 112, 219, 0.12) 0%, rgba(106, 90, 205, 0.06) 35%, transparent 60%),
-        radial-gradient(ellipse 120px 60px at 10% 80%, rgba(123, 104, 238, 0.1) 0%, rgba(72, 61, 139, 0.05) 30%, transparent 50%),
-
-        /* Nebula clouds */
-        radial-gradient(ellipse 300px 200px at 60% 20%, rgba(25, 25, 112, 0.1) 0%, transparent 60%),
-        radial-gradient(ellipse 250px 150px at 90% 40%, rgba(72, 61, 139, 0.08) 0%, transparent 50%),
-
-        /* Cosmic dust */
-        radial-gradient(ellipse 400px 50px at 50% 90%, rgba(138, 43, 226, 0.05) 0%, transparent 40%),
-        radial-gradient(ellipse 300px 40px at 30% 10%, rgba(106, 90, 205, 0.04) 0%, transparent 30%);
-    animation: slowDrift 30s ease-in-out infinite alternate;
-    pointer-events: none;
-    opacity: 0.7;
-}
-
-@keyframes spaceGradient {
-    0% { background-position: 0% 50%; }
-    25% { background-position: 100% 20%; }
-    50% { background-position: 200% 80%; }
-    75% { background-position: 100% 40%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes starTwinkle {
-    0% {
-        opacity: 0.7;
-        transform: scale(1);
-    }
-    25% {
-        opacity: 1;
-        transform: scale(1.2);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.1);
-    }
-    75% {
-        opacity: 1;
-        transform: scale(1.15);
-    }
-    100% {
-        opacity: 0.7;
-        transform: scale(1);
-    }
-}
-
-@keyframes slowDrift {
-    0% {
-        transform: translate(-5px, -3px) rotate(0deg);
-        opacity: 0.5;
-    }
-    50% {
-        transform: translate(8px, 5px) rotate(0.5deg);
-        opacity: 0.8;
-    }
-    100% {
-        transform: translate(-3px, -2px) rotate(-0.3deg);
-        opacity: 0.6;
-    }
 }
 
 .startScreen h1 {
-    font-size: clamp(48px, 12vw, 80px);
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: white;
-    text-shadow:
-        3px 3px 6px rgba(0,0,0,0.8),
-        1px 1px 0 rgba(0,0,0,0.9),
-        0 0 20px rgba(255, 255, 255, 0.3);
-    z-index: 3;
-    position: relative;
-    letter-spacing: 2px;
+    font-size: 28px;
+    margin-bottom: 10px;
 }
 
 @keyframes glow {
@@ -535,239 +401,31 @@
 .startButtons {
     display: flex;
     flex-direction: column;
-    gap: clamp(20px, 4vh, 28px); /* Increased spacing */
-    padding: 20px;
-    z-index: 3;
-    position: relative;
+    gap: 15px;
 }
 
 .startBtn {
-    background: linear-gradient(145deg,
-        rgba(184, 134, 11, 0.9) 0%,
-        rgba(202, 138, 4, 0.85) 25%,
-        rgba(217, 119, 6, 0.8) 50%,
-        rgba(245, 158, 11, 0.85) 75%,
-        rgba(184, 134, 11, 0.9) 100%);
-    border: 4px solid transparent;
-    background-clip: padding-box;
-    padding: 8px 16px;
-    border-radius: 12px;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 15px;
     cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    min-width: clamp(180px, 50vw, 240px);
-    min-height: clamp(55px, 8vh, 70px);
+    transition: all 0.3s ease;
+    min-width: 216px;
+    min-height: 104px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(15px);
-    box-shadow:
-        0 8px 32px rgba(184, 134, 11, 0.4),
-        0 4px 16px rgba(245, 158, 11, 0.3),
-        0 0 20px rgba(255, 215, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    z-index: 3;
-    animation: buttonGlow 4s ease-in-out infinite alternate;
-}
-
-.startBtn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        rgba(255, 215, 0, 0.2),
-        rgba(255, 255, 255, 0.3),
-        transparent);
-    transition: left 0.8s ease-out;
-    z-index: 1;
-}
-
-
-.startBtn:hover::before {
-    left: 100%;
 }
 
 .startBtn:hover {
-    transform: translateY(-4px) scale(1.08);
-    box-shadow:
-        0 12px 35px rgba(184, 134, 11, 0.6),
-        0 6px 20px rgba(245, 158, 11, 0.5),
-        0 0 30px rgba(255, 215, 0, 0.4),
-        0 0 50px rgba(255, 215, 0, 0.2),
-        inset 0 2px 0 rgba(255, 255, 255, 0.4),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-    background: linear-gradient(145deg,
-        rgba(245, 158, 11, 1) 0%,
-        rgba(217, 119, 6, 0.95) 25%,
-        rgba(202, 138, 4, 0.9) 50%,
-        rgba(245, 158, 11, 0.95) 75%,
-        rgba(184, 134, 11, 1) 100%);
-    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.4)) brightness(1.2);
-    animation: buttonGlow 2s ease-in-out infinite alternate;
+    transform: translateY(-2px) scale(1.05);
+    filter: brightness(1.2);
 }
 
 .startBtn:active {
-    transform: translateY(-1px) scale(0.98);
-    box-shadow:
-        0 5px 20px rgba(138, 43, 226, 0.3),
-        inset 0 3px 7px rgba(0, 0, 0, 0.3);
-}
-
-/* Enhanced mobile touch feedback */
-@media (hover: none) and (pointer: coarse) {
-    .startBtn:active {
-        transform: translateY(2px) scale(0.95);
-        border-color: rgba(255, 215, 0, 1);
-        background: linear-gradient(145deg, rgba(138, 43, 226, 1), rgba(72, 61, 139, 0.9));
-    }
-}
-
-/* Disabled button state */
-.startBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-    border-color: rgba(255, 215, 0, 0.3);
-    pointer-events: none;
-}
-
-.startBtn:disabled .buttonIcon {
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-.startBtn:disabled .buttonText {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-}
-
-@keyframes buttonGlow {
-    0% {
-        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
-        box-shadow:
-            0 8px 32px rgba(184, 134, 11, 0.4),
-            0 4px 16px rgba(245, 158, 11, 0.3),
-            0 0 20px rgba(255, 215, 0, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-    }
-    100% {
-        filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.5));
-        box-shadow:
-            0 10px 40px rgba(184, 134, 11, 0.5),
-            0 6px 20px rgba(245, 158, 11, 0.4),
-            0 0 30px rgba(255, 215, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-    }
-}
-
-
-
-@keyframes iconFloat {
-    0% {
-        transform: translateY(0px);
-    }
-    100% {
-        transform: translateY(-3px);
-    }
-}
-
-@keyframes iconBounce {
-    0% {
-        transform: scale(1.2) rotateY(15deg) translateY(0px);
-    }
-    100% {
-        transform: scale(1.2) rotateY(15deg) translateY(-5px);
-    }
-}
-
-@keyframes textGlow {
-    0% {
-        text-shadow:
-            0 3px 6px rgba(0, 0, 0, 0.9),
-            0 0 15px rgba(255, 215, 0, 0.4),
-            0 0 25px rgba(255, 215, 0, 0.2);
-    }
-    100% {
-        text-shadow:
-            0 3px 6px rgba(0, 0, 0, 0.9),
-            0 0 20px rgba(255, 215, 0, 0.6),
-            0 0 35px rgba(255, 215, 0, 0.3);
-    }
-}
-
-@keyframes textPulse {
-    0% {
-        transform: scale(1.08) translateY(-2px);
-    }
-    100% {
-        transform: scale(1.12) translateY(-4px);
-    }
-}
-
-.buttonContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    z-index: 2;
-    position: relative;
-}
-
-.buttonIcon {
-    font-size: clamp(20px, 4vw, 26px);
-    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8))
-            drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: iconFloat 2s ease-in-out infinite alternate;
-}
-
-.buttonText {
-    font-family: var(--jersey25-font, 'Jersey 25'), sans-serif;
-    font-size: clamp(14px, 3vw, 18px);
-    font-weight: bold;
-    letter-spacing: 3px;
-    color: #ffffff;
-    text-shadow:
-        0 3px 6px rgba(0, 0, 0, 0.9),
-        0 0 15px rgba(255, 215, 0, 0.5),
-        0 0 25px rgba(255, 215, 0, 0.3);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    animation: textGlow 2.5s ease-in-out infinite alternate;
-}
-
-.startBtn:hover .buttonIcon {
-    font-size: 42px;
-    filter: drop-shadow(0 6px 12px rgba(255, 215, 0, 0.6))
-            drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
-    transform: scale(1.2) rotateY(15deg);
-    animation: iconBounce 0.8s ease-in-out infinite alternate;
-}
-
-.startBtn:hover .buttonText {
-    color: #FFD700;
-    text-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.9),
-        0 0 20px rgba(255, 215, 0, 0.8),
-        0 0 40px rgba(255, 215, 0, 0.4),
-        0 0 60px rgba(255, 215, 0, 0.2);
-    transform: scale(1.08) translateY(-2px);
-    letter-spacing: 4px;
-    animation: textPulse 0.6s ease-in-out infinite alternate;
+    transform: translateY(0) scale(0.98);
+    filter: brightness(0.9);
 }
 
 @media (max-height: 600px) {
@@ -779,7 +437,7 @@
     
     .controls {
         bottom: 15px;
-        gap: 120px; /* Maintain good spacing */
+        gap: 100px;
     }
     
     .controlBtn {
@@ -800,19 +458,8 @@
     
     
     .startBtn {
-        min-width: 200px;
-        min-height: 100px;
-        padding: 10px 16px;
-        border-radius: 15px;
-    }
-
-    .buttonIcon {
-        font-size: 28px !important;
-    }
-
-    .buttonText {
-        font-size: 18px !important;
-        letter-spacing: 1px;
+        padding: 10px 20px;
+        font-size: 14px;
     }
     
     .gameOver {
@@ -839,7 +486,7 @@
     
     .controls {
         bottom: 10px;
-        gap: 100px; /* Maintain good spacing */
+        gap: 80px;
     }
     
     .controlBtn {
@@ -860,157 +507,14 @@
     
     
     .startBtn {
-        min-width: 180px;
-        min-height: 90px;
-        padding: 8px 12px;
-        border-radius: 12px;
-    }
-
-    .buttonIcon {
-        font-size: 24px !important;
-    }
-
-    .buttonText {
-        font-size: 16px !important;
-        letter-spacing: 1px;
-    }
-
-    .startButtons {
-        gap: 18px; /* Increased mobile gap */
+        padding: 8px 16px;
+        font-size: 13px;
+        gap: 8px;
     }
     
     .gameOver {
         padding: 12px;
     }
-}
-
-/* How to Play Modal Styles */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
-
-.howToPlayModal {
-  background: linear-gradient(135deg,
-    rgba(25, 25, 112, 0.95) 0%,
-    rgba(30, 30, 130, 0.9) 25%,
-    rgba(40, 40, 150, 0.9) 50%,
-    rgba(50, 50, 170, 0.85) 75%,
-    rgba(25, 25, 112, 0.9) 100%);
-  border-radius: 20px;
-  padding: 25px;
-  width: 90vw;
-  max-width: 500px;
-  max-height: 85vh;
-  overflow-y: auto;
-  border: 2px solid rgba(173, 216, 230, 0.4);
-  margin: 10px;
-  backdrop-filter: blur(20px);
-  box-shadow:
-    0 20px 60px rgba(25, 25, 112, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.header h2 {
-  color: white;
-  margin: 0;
-  font-size: 28px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.closeBtn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  font-weight: bold;
-}
-
-.closeBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-.modalContent {
-  color: white;
-}
-
-.gameRules, .earnMoney, .getStarted {
-  margin-bottom: 25px;
-}
-
-.gameRules h3, .earnMoney h3, .getStarted h3 {
-  color: rgba(173, 216, 230, 0.9);
-  font-size: 18px;
-  margin-bottom: 12px;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.gameRules ul, .earnMoney ul {
-  padding-left: 20px;
-  margin: 10px 0;
-}
-
-.gameRules li, .earnMoney li {
-  margin-bottom: 8px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-}
-
-.earnMoney p, .getStarted p {
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-.earnMoney strong {
-  color: rgba(173, 216, 230, 0.9);
-  font-weight: bold;
-}
-
-/* Scrollbar styles for modal */
-.howToPlayModal::-webkit-scrollbar {
-  width: 6px;
-}
-
-.howToPlayModal::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.howToPlayModal::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-}
-
-.howToPlayModal::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Additional responsive adjustments for different screen ratios */
@@ -1023,182 +527,5 @@
 @media (max-aspect-ratio: 9/16) {
     .startScreen {
         background-size: cover;
-    }
-}
-
-/* Loading Screen Styles */
-.loadingContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(135deg,
-        #1a1a2e 0%,
-        #2d1b69 25%,
-        #483d8b 50%,
-        #6a5acd 75%,
-        #8a2be2 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    overflow: hidden;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-.loadingContent {
-    text-align: center;
-    color: white;
-    max-width: 300px;
-    width: 90%;
-}
-
-.loadingIcon {
-    margin-bottom: 30px;
-    position: relative;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.astronaut {
-    width: 60px;
-    height: 60px;
-    background: url('/astronaut.png') no-repeat center center;
-    background-size: contain;
-    animation: float 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.loadingTitle {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 25px;
-    background: linear-gradient(45deg, #00d4ff, #ffffff, #8a2be2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.progressBar {
-    width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.progressFill {
-    height: 100%;
-    background: linear-gradient(90deg, #00d4ff, #8a2be2, #00d4ff);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-    transition: width 0.3s ease-out;
-    border-radius: 10px;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.loadingText {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 10px;
-    letter-spacing: 0.5px;
-}
-
-/* Share Button Styles */
-.shareBtn {
-    background: linear-gradient(145deg, #ff6b35 0%, #f7931e 100%) !important;
-    border: 2px solid #ff8c42 !important;
-}
-
-.shareBtn:hover {
-    background: linear-gradient(145deg, #ff7849 0%, #fa9f35 100%) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 15px rgba(255, 107, 53, 0.4) !important;
-}
-
-.shareBtn:active {
-    transform: translateY(0) !important;
-}
-
-/* Mobile Performance Optimizations */
-@media (max-width: 768px) {
-    .gameContainer {
-        /* Use GPU acceleration */
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        will-change: transform;
-    }
-
-    .gameCanvas {
-        /* Optimize rendering */
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        will-change: transform;
-        /* Disable image smoothing for better performance */
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: -moz-crisp-edges;
-        image-rendering: crisp-edges;
-    }
-
-    /* Optimize game over buttons for mobile spacing */
-    .gameOverButtons {
-        gap: 15px; /* Increased spacing */
-        padding: 10px;
-        max-width: 100%;
-        overflow-x: auto;
-    }
-
-    .actionBtn {
-        min-width: 120px; /* Ensure buttons are touch-friendly */
-        padding: 12px 16px;
-        font-size: 14px;
-    }
-
-    /* Control buttons optimization */
-    .controls {
-        gap: 100px; /* Much better spacing for touch */
-    }
-
-    .controlBtn {
-        width: 65px;
-        height: 65px;
-        /* Improve touch responsiveness */
-        touch-action: manipulation;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-}
-
-/* Mobile loading screen optimizations */
-@media (max-width: 768px) {
-    .loadingTitle {
-        font-size: 24px;
-    }
-
-    .astronaut {
-        width: 50px;
-        height: 50px;
-    }
-
-    .loadingIcon {
-        height: 70px;
-        margin-bottom: 25px;
     }
 }

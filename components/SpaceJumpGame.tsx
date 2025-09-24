@@ -13,14 +13,8 @@ export default function SpaceJumpGame() {
   const gameInitialized = useRef(false)
   const gameInstanceRef = useRef<any>(null)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
-  const [showHowToPlay, setShowHowToPlay] = useState(false)
   const [isSubmittingScore, setIsSubmittingScore] = useState(false)
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [gameScriptLoaded, setGameScriptLoaded] = useState(false)
-  const [assetsLoaded, setAssetsLoaded] = useState(false)
-  const [gameEngineReady, setGameEngineReady] = useState(false)
-  const [loadingProgress, setLoadingProgress] = useState(0)
-  const [gameStarting, setGameStarting] = useState(false)
   const currentScoreRef = useRef(0)
   
   // Modal states
@@ -41,6 +35,27 @@ export default function SpaceJumpGame() {
   const { address, isConnected } = useAccount()
   const { context, actions } = useFrame()
   
+  const handleHomeClick = () => {
+    actions?.openMiniApp({
+      url: 'https://farcaster.xyz/miniapps/efPuNxgasRTJ/recess'
+    })
+  }
+
+  const handleShareScore = () => {
+    const finalScore = parseInt(document.getElementById('finalScore')?.textContent || '0')
+    const shareText = `I scored ${finalScore} in ArbJump, beat my score and Earn $ARB`
+    const shareUrl = 'https://farcaster.xyz/miniapps/fAd-0wlazOlZ/arbjump'
+
+    // Use Farcaster's casting functionality if available
+    if (actions?.openUrl) {
+      const castUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`
+      actions.openUrl(castUrl)
+    } else {
+      // Fallback: open in new window
+      const castUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`
+      window.open(castUrl, '_blank')
+    }
+  }
   
   // New Chainjump hooks
   const { setScore, isPending, isSuccess, error } = useChainjumpSetScore()
@@ -88,7 +103,7 @@ export default function SpaceJumpGame() {
     if (submissionStatus === 'error') {
       setSubmissionStatus('idle')
     }
-
+    
     // Enhanced wallet connection checks
     if (!isConnected) {
       setModal({
@@ -125,7 +140,7 @@ export default function SpaceJumpGame() {
     const userUsername = context?.user?.username || 'Anonymous'
     const userFid = context?.user?.fid || 0
     const userPfp = context?.user?.pfpUrl || ''
-
+    
     // Log context for debugging
     if (process.env.NODE_ENV === 'development') {
       console.log('Farcaster context:', context)
@@ -154,43 +169,6 @@ export default function SpaceJumpGame() {
         // Do nothing, just close modal
       }
     })
-  }
-
-  const handleShareScore = async () => {
-    const finalScore = parseInt(document.getElementById('finalScore')?.textContent || '0')
-
-    if (finalScore <= 0) {
-      setModal({
-        isVisible: true,
-        title: 'No Score to Share',
-        message: 'Play the game first to get a score worth sharing!',
-        type: 'info'
-      })
-      return
-    }
-
-    try {
-      if (actions?.composeCast) {
-        await actions.composeCast({
-          text: `I scored ${finalScore} in ArbJump! 🚀 Beat my score and earn real $ARB tokens! 💰\n\nPlay now: https://farcaster.xyz/miniapps/fAd-0wlazOlZ/arbjump`
-        })
-      } else {
-        setModal({
-          isVisible: true,
-          title: 'Share Not Available',
-          message: 'Sharing is only available in Farcaster clients that support it.',
-          type: 'info'
-        })
-      }
-    } catch (error) {
-      console.error('Error sharing score:', error)
-      setModal({
-        isVisible: true,
-        title: 'Share Failed',
-        message: 'Could not share your score. Please try again later.',
-        type: 'error'
-      })
-    }
   }
 
   const closeModal = () => {
@@ -245,17 +223,11 @@ export default function SpaceJumpGame() {
   const setupGameEventListeners = (gameInstance: any) => {
     // Store gameInstance in ref for React onClick handlers
     gameInstanceRef.current = gameInstance
-
-    console.log('🔧 Setting up game event listeners...', { gameInstance })
-    console.log('🔧 Available game methods:', Object.getOwnPropertyNames(gameInstance))
-    console.log('🔧 Game startGame method:', typeof gameInstance.startGame)
-    console.log('🔧 gameInstanceRef after setup:', gameInstanceRef.current)
-
-    // Verify that our ref is properly set
-    if (gameInstanceRef.current === gameInstance) {
-      console.log('✅ gameInstanceRef properly set')
-    } else {
-      console.error('❌ gameInstanceRef not properly set')
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Setting up game event listeners...', { gameInstance })
+      console.log('Available game methods:', Object.getOwnPropertyNames(gameInstance))
+      console.log('Game instance keys:', gameInstance.keys)
     }
 
     // Wait a bit longer for DOM elements to be ready
@@ -329,10 +301,16 @@ export default function SpaceJumpGame() {
         }
       }
 
-      // Start screen buttons - Skip startPlayBtn as it now uses React onClick
+      // Start screen buttons
       const startPlayBtn = document.getElementById('startPlayBtn')
       console.log('Start play button found:', !!startPlayBtn, 'Game start method:', !!gameInstance?.startGame)
-      // Note: startPlayBtn now uses React onClick handler with loading state
+      if (startPlayBtn && gameInstance && typeof gameInstance.startGame === 'function') {
+        startPlayBtn.onclick = (e) => {
+          console.log('Start play button clicked')
+          e.preventDefault()
+          gameInstance.startGame()
+        }
+      }
 
       const startLeaderboardBtn = document.getElementById('startLeaderboardBtn')
       console.log('Start leaderboard button found:', !!startLeaderboardBtn)
@@ -340,18 +318,16 @@ export default function SpaceJumpGame() {
         startLeaderboardBtn.onclick = (e) => {
           console.log('Start leaderboard button clicked')
           e.preventDefault()
+          console.log('Setting showLeaderboard to true from start screen')
           setShowLeaderboard(true)
+          console.log('showLeaderboard state should now be true from start screen')
         }
-      }
-
-      const howToPlayBtn = document.getElementById('howToPlayBtn')
-      console.log('How to play button found:', !!howToPlayBtn)
-      if (howToPlayBtn) {
-        howToPlayBtn.onclick = (e) => {
-          console.log('How to play button clicked')
+        // Also add a click event listener as backup
+        startLeaderboardBtn.addEventListener('click', (e) => {
+          console.log('Start leaderboard button click event listener triggered')
           e.preventDefault()
-          setShowHowToPlay(true)
-        }
+          setShowLeaderboard(true)
+        })
       }
 
       const startExitBtn = document.getElementById('startExitBtn')
@@ -425,78 +401,17 @@ export default function SpaceJumpGame() {
     }, 200) // Increased delay to ensure DOM is fully ready
   }
 
-  // Asset preloader function
-  const preloadAssets = () => {
-    return new Promise<void>((resolve) => {
-      const assets = [
-        '/bg.png',
-        '/astronaut.png',
-        '/tilePurple.png',
-        '/tileRed.png',
-        '/tileYellow.png',
-        '/coin.png',
-        '/shoes.png',
-        '/Wallpaper.png',
-        '/play.png',
-        '/exit.png',
-        '/topscorer.png',
-        '/bg2.png',
-        '/space2.png',
-        '/space3.png',
-        '/jump.wav',
-        '/coins.mp3'
-      ]
-
-      let loadedCount = 0
-      const totalAssets = assets.length
-
-      const updateProgress = () => {
-        loadedCount++
-        const progress = Math.round((loadedCount / totalAssets) * 100)
-        setLoadingProgress(progress)
-
-        if (loadedCount === totalAssets) {
-          setAssetsLoaded(true)
-          resolve()
-        }
-      }
-
-      assets.forEach(src => {
-        if (src.endsWith('.mp3') || src.endsWith('.wav')) {
-          const audio = new Audio(src)
-          audio.addEventListener('canplaythrough', updateProgress, { once: true })
-          audio.addEventListener('error', () => {
-            console.warn(`Failed to load audio asset: ${src}`)
-            updateProgress()
-          }, { once: true })
-          audio.load()
-        } else {
-          const img = new Image()
-          img.onload = updateProgress
-          img.onerror = () => {
-            console.warn(`Failed to load image asset: ${src}`)
-            updateProgress()
-          }
-          img.src = src
-        }
-      })
-    })
-  }
-
   useEffect(() => {
     if (gameInitialized.current) return
     gameInitialized.current = true
 
-    // First preload assets, then load game
-    preloadAssets().then(() => {
-      // Load the game engine script
-      const script = document.createElement('script')
-      script.src = '/game-engine.js'
+    // Load the game engine script
+    const script = document.createElement('script')
+    script.src = '/game-engine.js'
     script.onload = () => {
       // Check if the game class is available
       if (!(window as any).SpaceJumpGameClass) {
         console.error('SpaceJumpGameClass not found. Game engine may not have loaded properly.')
-        setGameScriptLoaded(false)
         return
       }
 
@@ -507,48 +422,17 @@ export default function SpaceJumpGame() {
 
         if (!GameClass) {
           console.error('SpaceJumpGameClass is not defined after script load')
-          setGameScriptLoaded(false)
           return
         }
 
-        setGameScriptLoaded(true)
-
         const gameInstance = new GameClass()
-        console.log('✅ Game instance created:', gameInstance)
-        console.log('✅ Available methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(gameInstance)))
+        console.log('Game instance created:', gameInstance)
 
-        // Store the game instance in multiple places for reliability
-        gameInstanceRef.current = gameInstance
-        ;(window as any).gameInstance = gameInstance
-
-        // Wait for game engine assets to fully load before marking as ready
-        const checkGameReady = () => {
-          if (gameInstance.assetsLoaded >= gameInstance.totalAssets && gameInstance.totalAssets > 0) {
-            console.log('✅ Game engine fully initialized with all assets')
-            setGameEngineReady(true)
-
-            // Set up event listeners after game is fully ready
-            setupGameEventListeners(gameInstance)
-
-            // Add share score functionality to game
-            ;(window as any).shareScore = handleShareScore
-
-            console.log('✅ Game initialization complete')
-          } else {
-            console.log(`⏳ Waiting for game assets: ${gameInstance.assetsLoaded}/${gameInstance.totalAssets}`)
-            setTimeout(checkGameReady, 100)
-          }
-        }
-
-        // Also store on the button element as additional fallback
+        // Set up event listeners for our buttons after a short delay
+        // to ensure all DOM elements are ready
         setTimeout(() => {
-          const startPlayBtn = document.getElementById('startPlayBtn')
-          if (startPlayBtn) {
-            ;(startPlayBtn as any).gameInstance = gameInstance
-            console.log('✅ Game instance stored on button element')
-          }
-          checkGameReady()
-        }, 50)
+          setupGameEventListeners(gameInstance)
+        }, 100)
                } catch (error) {
            console.error('Error initializing game:', error)
            console.error('Error details:', {
@@ -558,81 +442,18 @@ export default function SpaceJumpGame() {
          }
     }
     script.onerror = () => {
-        console.error('Failed to load game engine script')
-      }
-      document.head.appendChild(script)
+      console.error('Failed to load game engine script')
+    }
+    document.head.appendChild(script)
 
-      return () => {
-        // Cleanup
-        const existingScript = document.querySelector('script[src="/game-engine.js"]')
-        if (existingScript) {
-          existingScript.remove()
-        }
-      }
-    }).catch((error) => {
-      console.error('Asset preloading failed:', error)
-      setAssetsLoaded(true) // Continue anyway
-    })
-  }, [])
-
-  // Set up button event listeners immediately after mount
-  useEffect(() => {
-    const setupButtonListeners = () => {
-      // Leaderboard button
-      const startLeaderboardBtn = document.getElementById('startLeaderboardBtn')
-      if (startLeaderboardBtn) {
-        startLeaderboardBtn.onclick = (e) => {
-          console.log('Start leaderboard button clicked')
-          e.preventDefault()
-          setShowLeaderboard(true)
-        }
-      }
-
-      // How to Play button
-      const howToPlayBtn = document.getElementById('howToPlayBtn')
-      if (howToPlayBtn) {
-        howToPlayBtn.onclick = (e) => {
-          console.log('How to play button clicked')
-          e.preventDefault()
-          setShowHowToPlay(true)
-        }
+    return () => {
+      // Cleanup
+      const existingScript = document.querySelector('script[src="/game-engine.js"]')
+      if (existingScript) {
+        existingScript.remove()
       }
     }
-
-    // Set up listeners immediately
-    setupButtonListeners()
-
-    // Also set up after a small delay to ensure DOM is ready
-    const timer = setTimeout(setupButtonListeners, 100)
-
-    return () => clearTimeout(timer)
   }, [])
-
-  // Show loading screen while assets are loading or game engine is not ready
-  if (!assetsLoaded || !gameEngineReady) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingContent}>
-          <div className={styles.loadingIcon}>
-            <div className={styles.astronaut}></div>
-          </div>
-          <h2 className={styles.loadingTitle}>Loading ArbJump</h2>
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${loadingProgress}%` }}
-            ></div>
-          </div>
-          <p className={styles.loadingText}>
-            {!assetsLoaded
-              ? `${loadingProgress}% - Loading game assets...`
-              : 'Initializing game engine...'
-            }
-          </p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div id="gameContainer" className={styles.gameContainer}>
@@ -708,18 +529,6 @@ export default function SpaceJumpGame() {
               </div>
             </button>
             <button
-              id="shareScoreBtn"
-              className={`${styles.actionBtn} ${styles.shareBtn}`}
-              onClick={(e) => {
-                console.log('Share score button clicked via React onClick')
-                e.preventDefault()
-                e.stopPropagation()
-                handleShareScore()
-              }}
-            >
-              📤 Share
-            </button>
-            <button
               id="topScorerBtn"
               className={styles.actionBtn}
               onClick={(e) => {
@@ -731,8 +540,20 @@ export default function SpaceJumpGame() {
             >
               Leaderboard
             </button>
-            <button 
-              id="exitBtn" 
+            <button
+              id="shareBtn"
+              className={styles.actionBtn}
+              onClick={(e) => {
+                console.log('Share button clicked via React onClick')
+                e.preventDefault()
+                e.stopPropagation()
+                handleShareScore()
+              }}
+            >
+              Share
+            </button>
+            <button
+              id="exitBtn"
               className={styles.actionBtn}
               onClick={(e) => {
                 console.log('Exit button clicked via React onClick')
@@ -753,7 +574,40 @@ export default function SpaceJumpGame() {
         </div>
         
         <div id="startScreen" className={styles.startScreen}>
-          <h1 className="jersey25-font">ArbJump</h1>
+          {/* HOME button at top-right */}
+          <button 
+            onClick={handleHomeClick}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '20px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(8px)',
+              color: 'white',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '10px',
+              padding: '10px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.3s ease',
+              fontWeight: 600,
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+              fontSize: '15px',
+              zIndex: 10
+            }}
+            aria-label="Home"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>HOME</span>
+          </button>
+          
+          <h1 className="jersey25-font" style={{ fontSize: '48px', fontWeight: 'bold', color: 'white', textShadow: '3px 3px 6px rgba(0,0,0,0.8), 1px 1px 0 rgba(0,0,0,0.9)', marginBottom: '30px' }}>ArbJump</h1>
           
           {/* Enhanced wallet connection info on start screen */}
           <div className={styles.startWalletInfo}>
@@ -793,77 +647,31 @@ export default function SpaceJumpGame() {
           </div>
           
           <div className={styles.startButtons}>
-            <button
-              id="startPlayBtn"
+            <button 
+              id="startPlayBtn" 
               className={styles.startBtn}
-              disabled={gameStarting || !gameEngineReady}
               onClick={(e) => {
-                console.log('Play Now button clicked via React onClick')
+                console.log('Start play button clicked via React onClick')
                 e.preventDefault()
                 e.stopPropagation()
-
-                // Only start if game engine is fully ready
-                if (!gameEngineReady) {
-                  console.warn('Game engine not ready yet!')
-                  return
-                }
-
-                setGameStarting(true)
-
-                // Start the game immediately since assets are already loaded
                 if (gameInstanceRef.current && typeof gameInstanceRef.current.startGame === 'function') {
                   gameInstanceRef.current.startGame()
-                } else {
-                  console.error('Game instance or startGame method not available')
                 }
-                setGameStarting(false)
               }}
             >
-              <div className={styles.buttonContent}>
-                {gameStarting ? (
-                  <>
-                    <LoadingSpinner size="small" color="#fff" />
-                    <span className={styles.buttonText}>STARTING...</span>
-                  </>
-                ) : (
-                  <>
-                    <span className={styles.buttonIcon}>🎮</span>
-                    <span className={styles.buttonText}>
-                      {gameEngineReady ? 'PLAY NOW' : 'LOADING...'}
-                    </span>
-                  </>
-                )}
-              </div>
+              <img src="/play.svg" alt="Start Game" style={{ width: '200px', height: '88px', objectFit: 'contain', pointerEvents: 'none' }} />
             </button>
-            <button
-              id="startLeaderboardBtn"
+            <button 
+              id="startLeaderboardBtn" 
               className={styles.startBtn}
               onClick={(e) => {
-                console.log('Leaderboard button clicked via React onClick')
+                console.log('Start leaderboard button clicked via React onClick')
                 e.preventDefault()
                 e.stopPropagation()
                 setShowLeaderboard(true)
               }}
             >
-              <div className={styles.buttonContent}>
-                <span className={styles.buttonIcon}>🏆</span>
-                <span className={styles.buttonText}>LEADERBOARD</span>
-              </div>
-            </button>
-            <button
-              id="howToPlayBtn"
-              className={styles.startBtn}
-              onClick={(e) => {
-                console.log('How to play button clicked via React onClick')
-                e.preventDefault()
-                e.stopPropagation()
-                setShowHowToPlay(true)
-              }}
-            >
-              <div className={styles.buttonContent}>
-                <span className={styles.buttonIcon}>❓</span>
-                <span className={styles.buttonText}>HOW TO PLAY</span>
-              </div>
+              <img src="/leader.svg" alt="Leaderboard" style={{ width: '200px', height: '88px', objectFit: 'contain', pointerEvents: 'none' }} />
             </button>
             {/* <button id="startExitBtn" className={styles.startBtn}>
               <img src="/exit.svg" alt="Exit Game" style={{ width: '200px', height: '88px', objectFit: 'contain' }} />
@@ -882,8 +690,8 @@ export default function SpaceJumpGame() {
         </div>
       )} */}
       
-      <Leaderboard
-        isVisible={showLeaderboard}
+      <Leaderboard 
+        isVisible={showLeaderboard} 
         onClose={() => {
           console.log('Leaderboard close button clicked')
           setShowLeaderboard(false)
@@ -895,63 +703,6 @@ export default function SpaceJumpGame() {
         myRank={myRank}
         myScore={myScore}
       />
-
-      {/* How to Play Modal */}
-      {showHowToPlay && (
-        <div className={styles.overlay}>
-          <div className={styles.howToPlayModal}>
-            <div className={styles.header}>
-              <h2 className="jersey25-font">How to Play</h2>
-              <button
-                className={styles.closeBtn}
-                onClick={() => setShowHowToPlay(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className={styles.modalContent}>
-              <div className={styles.gameRules}>
-                <h3>🎮 How to Play</h3>
-                <ul>
-                  <li>Use ← → arrow keys or tap the control buttons to move your character</li>
-                  <li>Jump on platforms to reach higher levels and avoid falling</li>
-                  <li>Collect coins scattered throughout the levels to increase your score</li>
-                  <li>The higher you climb, the more points you earn</li>
-                  <li>Avoid falling off the bottom of the screen - game over!</li>
-                  <li>Try to reach the highest score possible and compete with others</li>
-                </ul>
-              </div>
-
-              <div className={styles.earnMoney}>
-                <h3>💰 Collect Coins, Earn Real Money on ARBITRUM</h3>
-                <p>
-                  <strong>Play ArbJump and earn real $ARB cryptocurrency!</strong>
-                </p>
-                <ul>
-                  <li>🎯 <strong>Collect coins</strong> in-game to build your score</li>
-                  <li>🏆 <strong>Submit high scores</strong> to compete on the leaderboard</li>
-                  <li>💎 <strong>Top players win real $ARB tokens</strong> distributed weekly</li>
-                  <li>⚡ <strong>Powered by Arbitrum</strong> - fast, secure blockchain transactions</li>
-                  <li>🔒 <strong>Connect your wallet</strong> to save scores and receive winnings</li>
-                  <li>🎪 <strong>Fair competition</strong> - all scores recorded on-chain</li>
-                </ul>
-              </div>
-
-              <div className={styles.getStarted}>
-                <h3>🚀 Start Earning Now</h3>
-                <p>
-                  <strong>Ready to earn real cryptocurrency?</strong><br/>
-                  1. Connect your Arbitrum-compatible wallet<br/>
-                  2. Play ArbJump and collect as many coins as possible<br/>
-                  3. Submit your high scores to the blockchain leaderboard<br/>
-                  4. Compete with players worldwide for $ARB prizes!<br/>
-                  5. Weekly payouts to top performers
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       
       <CustomModal
         isVisible={modal.isVisible}

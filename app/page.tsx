@@ -6,10 +6,10 @@ const frame = {
   version: 'next',
   imageUrl: `${APP_URL}/images/icon.png`,
   button: {
-    title: 'EARN $ARB NOW',
+    title: 'Launch Template',
     action: {
       type: 'launch_frame',
-      name: 'arbjump',
+      name: 'chainjump',
       url: APP_URL,
       splashImageUrl: `${APP_URL}/images/splash.png`,
       splashBackgroundColor: '#f7f7f7',
@@ -19,10 +19,10 @@ const frame = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'ArbJump',
+    title: 'chainjump',
     openGraph: {
-      title: 'ArbJump',
-      description: 'ArbJump is the next billion game on Arbitrum',
+      title: 'chainjump',
+      description: 'chain jump is next billion game',
     },
     other: {
       'fc:frame': JSON.stringify(frame),

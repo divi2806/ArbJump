@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useChainjumpLeaderboard, useChainjumpMyGameData } from '../smartcontracthooks'
 import { useAccount, useChainId } from 'wagmi'
-import { arbitrum } from 'wagmi/chains'
+import { base } from 'wagmi/chains'
 import styles from './Leaderboard.module.css'
 
 interface LeaderboardProps {
@@ -17,9 +17,9 @@ interface LeaderboardProps {
   myScore?: number
 }
 
-export default function Leaderboard({
-  isVisible,
-  onClose,
+export default function Leaderboard({ 
+  isVisible, 
+  onClose, 
   isUpdating = false,
   leaderboardData,
   isLoading,
@@ -28,71 +28,8 @@ export default function Leaderboard({
   myScore
 }: LeaderboardProps) {
   const [limit, setLimit] = useState(20)
-  const [timeLeft, setTimeLeft] = useState('')
   const { address } = useAccount()
   const chainId = useChainId()
-
-  // Unix-based persistent weekly contest timer
-  useEffect(() => {
-    const getWeeklyContestEndTime = () => {
-      // Contest starts on Monday 00:00 UTC and ends on Sunday 23:59:59 UTC
-      // This creates consistent weekly periods regardless of when user opens the page
-
-      const now = new Date()
-      const currentWeekStart = new Date(now)
-
-      // Get the Monday of current week (0 = Sunday, 1 = Monday, etc.)
-      const dayOfWeek = now.getUTCDay()
-      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1  // If Sunday, 6 days from last Monday
-
-      // Set to last Monday 00:00:00 UTC
-      currentWeekStart.setUTCDate(now.getUTCDate() - daysFromMonday)
-      currentWeekStart.setUTCHours(0, 0, 0, 0)
-
-      // Contest ends on Sunday 23:59:59 UTC (6 days after Monday)
-      const contestEnd = new Date(currentWeekStart)
-      contestEnd.setUTCDate(currentWeekStart.getUTCDate() + 6)
-      contestEnd.setUTCHours(23, 59, 59, 999)
-
-      return contestEnd
-    }
-
-    const updateTimer = () => {
-      const contestEndTime = getWeeklyContestEndTime()
-      const now = new Date().getTime()
-      const distance = contestEndTime.getTime() - now
-
-      if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000)
-
-        setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`)
-      } else {
-        // Contest has ended, calculate next week's end
-        const nextWeekEnd = new Date(contestEndTime)
-        nextWeekEnd.setUTCDate(nextWeekEnd.getUTCDate() + 7)
-
-        const nextDistance = nextWeekEnd.getTime() - now
-        if (nextDistance > 0) {
-          const days = Math.floor(nextDistance / (1000 * 60 * 60 * 24))
-          const hours = Math.floor((nextDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-          const minutes = Math.floor((nextDistance % (1000 * 60 * 60)) / (1000 * 60))
-          const seconds = Math.floor((nextDistance % (1000 * 60)) / 1000)
-
-          setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`)
-        } else {
-          setTimeLeft('Calculating...')
-        }
-      }
-    }
-
-    updateTimer()
-    const timer = setInterval(updateTimer, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
   
   // Use the new Chainjump hooks
   const { 
@@ -102,10 +39,11 @@ export default function Leaderboard({
     refetch: refetchScores 
   } = useChainjumpLeaderboard(limit)
   
-  const {
-    myScore: myChainjumpScore,
-    myRank: myChainjumpRank,
-    hasScore,
+  const { 
+    myScore: myChainjumpScore, 
+    myRank: myChainjumpRank, 
+    hasScore, 
+    isLoading: myDataLoading,
     username,
     fid,
     pfp
@@ -123,8 +61,8 @@ export default function Leaderboard({
       console.log('Leaderboard Debug:', {
         address,
         chainId,
-        expectedChainId: arbitrum.id,
-        isCorrectNetwork: chainId === arbitrum.id,
+        expectedChainId: base.id,
+        isCorrectNetwork: chainId === base.id,
         displayLeaderboard,
         displayLoading,
         scoresError: scoresError?.message,
@@ -155,32 +93,11 @@ export default function Leaderboard({
           <h2 className="jersey25-font">Leaderboard</h2>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
-
-        <div className={styles.prizeSection}>
-          <div className={styles.prizeInfo}>
-            <div className={styles.prizeText}>
-              <img
-                src="/token.png"
-                alt="ARB Token"
-                className={styles.tokenIcon}
-                onError={(e) => {
-                  console.error('Token image failed to load:', e.currentTarget.src)
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-              <span>Win $ARB by playing games and saving score</span>
-            </div>
-            <div className={styles.countdown}>
-              <span className={styles.countdownLabel}>Contest ends in:</span>
-              <span className={styles.countdownTimer}>{timeLeft}</span>
-            </div>
-          </div>
-        </div>
         
-        {chainId !== arbitrum.id && (
+        {chainId !== base.id && (
           <div className={styles.networkWarning}>
             <p>Wrong Network</p>
-            <p>Please switch to <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#FFD700', textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>Arbitrum</span> to view scores</p>
+            <p>Please switch to Base  to view scores</p>
           </div>
         )}
         

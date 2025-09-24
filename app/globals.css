@@ -24,28 +24,6 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-  /* Mobile optimizations */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-/* Prevent zoom on mobile */
-html {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
-}
-
-/* Fix mobile viewport issues */
-* {
-  box-sizing: border-box;
 }
 
 @layer utilities {

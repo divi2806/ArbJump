@@ -29,7 +29,8 @@ export async function GET() {
     "header": "eyJmaWQiOjExNDI1MzksInR5cGUiOiJhdXRoIiwia2V5IjoiMHgyODUyMTE3NzI2ODcyNTY0YThiZDk3M2E5OTIzOGEzOTdiMjgzMUJmIn0",
     "payload": "eyJkb21haW4iOiJhcmItanVtcC52ZXJjZWwuYXBwIn0",
     "signature": "V47ddNLSU78Sg6s2xi7QWoQfuVwQTJVZTc7X0vsJwYkN7gjKVC2VNktfhvCF6eufySGZ0Y/pJ8JFX3vqkFPWYhs="
-  }
+  },
+  "contractAddress": "0xab2c353e41d3944844b941870ccf8e36cbd4788f"
 };
 
   return NextResponse.json(farcasterConfig);

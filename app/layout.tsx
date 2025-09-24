@@ -9,21 +9,13 @@ const jersey25 = Jersey_25({
   subsets: ['latin'],
   weight: '400',
   display: 'swap',
-  fallback: ['cursive'],
-  adjustFontFallback: false
+  fallback: ['monospace']
 })
 const teko = Teko({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
-  title: 'ArbJump',
-  description: 'ArbJump is the next billion game on Arbitrum',
-}
-
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  title: 'chainjump',
+  description: 'chain jump is next billion game',
 }
 
 export default function RootLayout({

@@ -131,7 +131,7 @@ export default function WalletConnection({
               Connecting...
             </>
           ) : (
-            'Connect Farcaster Wallet'
+            'Connect Wallet'
           )}
         </button>
       </div>
